@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git branch: 'main', url: 'https://github.com/abeilharz/infraPro.git'
+        git branch: 'main', url: 'https://github.com/abeilharz/Terraform-Project-25.git'
       }
     }
 
@@ -58,4 +58,5 @@ pipeline {
     }
   }
 }
+
 
