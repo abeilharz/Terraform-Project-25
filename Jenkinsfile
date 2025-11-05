@@ -1,7 +1,7 @@
 pipeline {
   agent any
 
-  environment 
+  environment {
     AWS_REGION = 'us-east-1'
   }
 
@@ -15,8 +15,11 @@ pipeline {
     stage('Build 1: Terraform init') {
       steps {
         withCredentials([
-          string(credentialsId: 'aws-access-key-id',      variable: 'AWS_ACCESS_KEY_ID'),
-          string(credentialsId: 'aws-secret-access-key',  variable: 'AWS_SECRET_ACCESS_KEY')
+          usernamePassword(
+            credentialsId: 'aws-terraform',
+            usernameVariable: 'AWS_ACCESS_KEY_ID',
+            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+          )
         ]) {
           sh 'terraform init -input=false'
         }
@@ -26,9 +29,14 @@ pipeline {
     stage('Build 2: Terraform plan') {
       steps {
         withCredentials([
-          string(credentialsId: 'aws-access-key-id',      variable: 'AWS_ACCESS_KEY_ID'),
-          string(credentialsId: 'aws-secret-access-key',  variable: 'AWS_SECRET_ACCESS_KEY')
+          usernamePassword(
+            credentialsId: 'aws-terraform',
+            usernameVariable: 'AWS_ACCESS_KEY_ID',
+            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+          )
         ]) {
+          //  For Testing / Debugging:
+          sh 'aws sts get-caller-identity || echo "STS failed"'
           sh 'terraform plan -out=tfplan -input=false'
         }
       }
@@ -37,8 +45,11 @@ pipeline {
     stage('Deploy: Terraform apply') {
       steps {
         withCredentials([
-          string(credentialsId: 'aws-access-key-id',      variable: 'AWS_ACCESS_KEY_ID'),
-          string(credentialsId: 'aws-secret-access-key',  variable: 'AWS_SECRET_ACCESS_KEY')
+          usernamePassword(
+            credentialsId: 'aws-terraform',
+            usernameVariable: 'AWS_ACCESS_KEY_ID',
+            passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+          )
         ]) {
           sh 'terraform apply -input=false -auto-approve tfplan'
         }
@@ -58,5 +69,3 @@ pipeline {
     }
   }
 }
-
-
