@@ -4,12 +4,12 @@
   gather_facts: false
 
   tasks:
-    - name: Install Apache, Java, and Maven
+    - name: Install Apache, Java (Corretto 11), and Maven
       yum:
         name: 
           - httpd
-          - java-11-openjdk
-          - maven   
+          - java-11-amazon-corretto
+          - maven
         state: present
 
     - name: Ensure Apache is started and enabled
@@ -18,9 +18,11 @@
         state: started
         enabled: true
 
-    - name: Create simple index.html
+    - name: Create index.html
       copy:
         dest: /var/www/html/index.html
+        owner: root
+        group: root
         mode: '0644'
         content: |
           <!doctype html>
